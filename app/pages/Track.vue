@@ -19,7 +19,6 @@ function onSubmit(event: FormSubmitEvent<Schema>) {
   if (event.isTrusted) {
     const otp = event.data.otp;
     console.log("otp", otp.join(""));
-    console.log(event.data.otp);
   }
 }
 
