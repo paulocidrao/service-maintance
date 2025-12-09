@@ -15,7 +15,7 @@ import ModalComponent from "../Modal/ModalComponent.vue";
         <span>Valor do serviço: R$ 00,00</span>
         <span class="flex items-center gap-1"
           >Status:
-          <div class="rounded-full p-1 bg-green-600 w-0.5 h-0.5"></div>
+          <div class="rounded-full p-1 bg-green-600 w-0.5 h-0.5" />
           Orçamento aprovado</span
         >
       </section>

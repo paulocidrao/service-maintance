@@ -1,34 +1,45 @@
 <script lang="ts" setup>
 import { z } from "zod";
 import type { FormSubmitEvent, FormErrorEvent } from "@nuxt/ui";
+
 const schema = z.object({
   otp: z
     .array(z.string())
     .length(5, { message: "Digite um código OTP válido de 5 dígitos" }),
 });
+
 type Schema = z.output<typeof schema>;
+
 const state = reactive<Partial<Schema>>({
   otp: [],
 });
 
 const errorMessage = ref<string | null>(null);
+const isModalOpen = ref(false);
 
 function onSubmit(event: FormSubmitEvent<Schema>) {
   errorMessage.value = null;
   console.log("EVENT", event);
   if (event.isTrusted) {
+    isModalOpen.value = true;
+    console.log("isModalOpen.value", isModalOpen.value);
     const otp = event.data.otp;
     console.log("otp", otp.join(""));
   }
 }
 
+const handleClose = () => {
+  isModalOpen.value = false;
+};
+
 function onError(event: FormErrorEvent) {
-  console.log("  event.errors[0]?.message", event.errors);
+  console.log("event.errors[0]?.message", event.errors);
   if (event.errors[0]?.message) {
     errorMessage.value = event.errors[0]?.message;
   }
 }
 </script>
+
 <template>
   <ClientOnly>
     <UContainer class="flex h-screen justify-center items-center">
@@ -39,12 +50,13 @@ function onError(event: FormErrorEvent) {
         <UForm
           class="space-y-8"
           :validate-on="['input']"
-          @submit="onSubmit"
           :schema="schema"
           :state="state"
+          @submit="onSubmit"
           @error="onError"
         >
           <UPinInput
+            v-model="state.otp"
             autofocus
             otp
             type="text"
@@ -53,7 +65,6 @@ function onError(event: FormErrorEvent) {
             color="neutral"
             highlight
             :length="5"
-            v-model="state.otp"
           />
           <p
             v-show="errorMessage"
@@ -70,5 +81,10 @@ function onError(event: FormErrorEvent) {
         </UForm>
       </section>
     </UContainer>
+
+    <CardTrackComponent
+      :is-modal-open="isModalOpen"
+      @close-modal="handleClose"
+    />
   </ClientOnly>
 </template>
