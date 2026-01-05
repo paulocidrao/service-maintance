@@ -29,10 +29,25 @@ const state = reactive<Partial<Schema>>({
   phone: undefined,
 });
 
-function onSubmit(event: FormSubmitEvent<Schema>) {
+async function onSubmit(event: FormSubmitEvent<Schema>) {
   if (event.isTrusted) {
-    router.push("/login");
-    console.log(event.data);
+    const dto: Schema = {
+      document: event.data.document,
+      email: event.data.email,
+      name: event.data.name,
+      password: event.data.password,
+      phone: event.data.phone,
+    };
+
+    await $fetch<Schema>("/user/create", {
+      method: "POST",
+      body: dto,
+      onResponse({ response }) {
+        if (response.status === 201) {
+          router.push("/login");
+        }
+      },
+    });
   }
 }
 </script>

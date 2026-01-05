@@ -30,4 +30,9 @@ export default defineNuxtConfig({
       ],
     },
   },
+  runtimeConfig: {
+    public: {
+      apiBase: process.env.VITE_API_URL,
+    },
+  },
 });
