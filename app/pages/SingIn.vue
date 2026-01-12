@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { z } from "zod";
 import type { FormSubmitEvent } from "@nuxt/ui";
@@ -21,6 +22,8 @@ const schema = z.object({
 
 type Schema = z.output<typeof schema>;
 
+const config = useRuntimeConfig();
+const errorMessage = ref("");
 const state = reactive<Partial<Schema>>({
   email: undefined,
   password: undefined,
@@ -30,6 +33,7 @@ const state = reactive<Partial<Schema>>({
 });
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
+  errorMessage.value = "";
   if (event.isTrusted) {
     const dto: Schema = {
       document: event.data.document,
@@ -39,13 +43,17 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       phone: event.data.phone,
     };
 
-    await $fetch<Schema>("/user/create", {
+    await $fetch<Schema>(`${config.public.apiBase}/user/create`, {
       method: "POST",
       body: dto,
       onResponse({ response }) {
         if (response.status === 201) {
           router.push("/login");
         }
+      },
+      onResponseError({ response }) {
+        console.log("erro response", response._data.message);
+        errorMessage.value = response._data.message;
       },
     });
   }
@@ -147,6 +155,9 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
           >
             Criar conta
           </UButton>
+          <p class="text-destructive-400 flex justify-center">
+            {{ errorMessage }}
+          </p>
           <ULink
             to="/login"
             class="flex items-center justify-center text-blue-600 hover:text-blue-300 underline"
