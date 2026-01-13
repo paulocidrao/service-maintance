@@ -3,6 +3,9 @@ import { z } from "zod";
 import type { FormSubmitEvent } from "@nuxt/ui";
 
 const show = ref(false);
+const config = useRuntimeConfig();
+const router = useRouter();
+const erroMessage = ref("");
 
 const schema = z.object({
   email: z.email("Digite um email válido"),
@@ -16,10 +19,25 @@ const state = reactive<Partial<Schema>>({
   password: undefined,
 });
 
-function onSubmit(event: FormSubmitEvent<Schema>) {
-  console.log("EVENT", event);
+async function onSubmit(event: FormSubmitEvent<Schema>) {
+  erroMessage.value = "";
   if (event.isTrusted) {
-    console.log(event.data);
+    const dto: Schema = {
+      email: event.data.email,
+      password: event.data.password,
+    };
+    await $fetch<Schema>(`${config.public.apiBase}/auth/login`, {
+      method: "POST",
+      body: dto,
+      onResponse({ response }) {
+        if (response.status === 201) {
+          router.push("/");
+        }
+      },
+      onResponseError({ response }) {
+        erroMessage.value = response._data.message;
+      },
+    });
   }
 }
 </script>
@@ -89,6 +107,9 @@ function onSubmit(event: FormSubmitEvent<Schema>) {
           >
             Entrar
           </UButton>
+          <p class="text-destructive-400 flex justify-center">
+            {{ erroMessage }}
+          </p>
           <USeparator size="xs" color="white" />
           <div class="flex gap-20 justify-center items-center">
             <ULink class="text-blue-600 hover:text-blue-300 underline"
