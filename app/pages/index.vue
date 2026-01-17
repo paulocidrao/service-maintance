@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import CardComponent from "~/components/CardDemand/CardComponent.vue";
-console.log(process.env.VITE_API_URL);
 </script>
 <template>
   <div>

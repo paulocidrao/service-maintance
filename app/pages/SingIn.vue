@@ -52,7 +52,6 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         }
       },
       onResponseError({ response }) {
-        console.log("erro response", response._data.message);
         errorMessage.value = response._data.message;
       },
     });

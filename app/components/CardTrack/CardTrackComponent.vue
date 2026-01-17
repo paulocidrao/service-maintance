@@ -10,9 +10,6 @@ const emit = defineEmits<{
 const handleClose = () => {
   emit("closeModal", false);
 };
-
-console.log("CloseModal", emit);
-console.log("IsmodalOpen", props.isModalOpen);
 </script>
 
 <template>

@@ -19,10 +19,8 @@ const isModalOpen = ref(false);
 
 function onSubmit(event: FormSubmitEvent<Schema>) {
   errorMessage.value = null;
-  console.log("EVENT", event);
   if (event.isTrusted) {
     isModalOpen.value = true;
-    console.log("isModalOpen.value", isModalOpen.value);
     const otp = event.data.otp;
     console.log("otp", otp.join(""));
   }
@@ -33,7 +31,6 @@ const handleClose = () => {
 };
 
 function onError(event: FormErrorEvent) {
-  console.log("event.errors[0]?.message", event.errors);
   if (event.errors[0]?.message) {
     errorMessage.value = event.errors[0]?.message;
   }
