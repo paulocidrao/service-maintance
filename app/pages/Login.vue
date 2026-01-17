@@ -6,6 +6,7 @@ const show = ref(false);
 const config = useRuntimeConfig();
 const router = useRouter();
 const erroMessage = ref("");
+const cookie = useCookie("token", { sameSite: true });
 
 const schema = z.object({
   email: z.email("Digite um email válido"),
@@ -29,8 +30,10 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     await $fetch<Schema>(`${config.public.apiBase}/auth/login`, {
       method: "POST",
       body: dto,
+
       onResponse({ response }) {
         if (response.status === 201) {
+          cookie.value = response._data;
           router.push("/");
         }
       },
