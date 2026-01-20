@@ -1,10 +1,16 @@
 <script lang="ts" setup>
 import type { IService } from '~/types/service';
 import dayjs from "dayjs";
+import { useCustomToast } from '../Toast/Toast';
+
+const config = useRuntimeConfig();
+const { successToast, errorToast } = useCustomToast();
 const props = defineProps<{
   isModalOpen: boolean;
   service: IService;
 }>();
+
+
 
 const emit = defineEmits<{
   closeModal: [value: boolean];
@@ -20,6 +26,29 @@ const status: Record<string, string> = {
   "accept": "Orçamento aprovado"
 }
 
+const handleChangeStatus = async (status: "accept" | "reject") => {
+  await $fetch(`${config.public.apiBase}/budget/${props.service.budget.id}`, {
+    method: 'patch',
+    body: {
+      "status": status
+    },
+    onResponse({ response }) {
+      if (response.ok) {
+        emit("closeModal", false);
+        successToast({
+          title: 'Sucesso!',
+          description: status === "accept" ? 'Orçamento aprovado!' : "Orçamento reprovado!"
+        })
+      } else {
+        errorToast({
+          title: 'Ooops!',
+          description: 'Houve algum problema!',
+        })
+      }
+    }
+  })
+}
+
 </script>
 
 <template>
@@ -32,21 +61,24 @@ const status: Record<string, string> = {
         <p>Prestador: {{ service.workerName }}</p>
         <span>Data de entrega: {{ dayjs(service.deliveryDate).format("DD/MM/YYYY") }}</span>
         <span>Orçamento:{{ service.budget.price.toLocaleString("PT-BR", { style: "currency", currency: 'BRL' })
-          }}</span>
+        }}</span>
         <span class="flex items-center gap-1">Status:
           {{ status[service.budget.status] }}
         </span>
       </section>
 
-      <section v-show="true" class="w-full justify-around items-center flex gap-3">
-        <UButton color="error" class="w-1/2 font-bold justify-center" label="Recusar orçamento" @click="handleClose" />
-        <UButton class="w-1/2 text-center justify-center font-bold" label="Aprovar orçamento" @click="handleClose" />
-      </section>
+      <div v-if="service.budget.status === 'pending'">
+        <section class="w-full justify-around items-center flex gap-3">
+          <UButton color="error" class="w-1/2 font-bold justify-center" label="Recusar orçamento"
+            @click="handleChangeStatus('reject')" />
+          <UButton class="w-1/2 text-center justify-center font-bold" label="Aprovar orçamento"
+            @click="handleChangeStatus('accept')" />
+        </section>
+      </div>
 
-      <section v-show="false">
-        <UButton size="xl" color="neutral" class="w-full font-bold cursor-pointer justify-center text-center"
-          label="Fechar" @click="handleClose" />
-      </section>
+      <div v-else>
+        <UButton label="Fechar" color="white" class="w-full justify-center flex font-bold" @click="handleClose" />
+      </div>
     </div>
   </section>
 </template>
