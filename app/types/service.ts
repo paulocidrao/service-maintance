@@ -6,6 +6,7 @@ export interface IService {
   deliveryDate: Date;
   isFinished: boolean;
   workerName: string;
+  ownerId: string;
   budget: {
     id: string;
     status: string;

@@ -2,7 +2,7 @@
 import type { IService } from '~/types/service';
 import dayjs from "dayjs";
 import { useCustomToast } from '../Toast/Toast';
-
+import { status } from '~/consts';
 const config = useRuntimeConfig();
 const { successToast, errorToast } = useCustomToast();
 const props = defineProps<{
@@ -20,11 +20,7 @@ const handleClose = () => {
   emit("closeModal", false);
 };
 
-const status: Record<string, string> = {
-  "pending": "Aguardando aprovação",
-  "reject": "Orçamento negado",
-  "accept": "Orçamento aprovado"
-}
+
 
 const handleChangeStatus = async (status: "accept" | "reject") => {
   await $fetch(`${config.public.apiBase}/budget/${props.service.budget.id}`, {
