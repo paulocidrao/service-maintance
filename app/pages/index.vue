@@ -38,7 +38,7 @@ onMounted(async () => {
       <section v-if="service?.length === 0" class="flex items-center justify-center">
         <p>Você não tem nenhum serviço no momento!</p>
       </section>
-      <section v-else>
+      <section v-else class="grid grid-cols-3 gap-4">
         <CardComponent v-for="item in service" :key="item.id" :service="item" />
       </section>
     </section>

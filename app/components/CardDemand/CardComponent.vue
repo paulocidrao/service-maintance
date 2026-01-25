@@ -11,7 +11,7 @@ defineProps<{
 </script>
 
 <template>
-  <UCard class="w-1/4">
+  <UCard class="w-full">
     <template #header>
       <h2 class="text-xl font-bold">Cliente {{ service.clientName }}</h2>
     </template>
