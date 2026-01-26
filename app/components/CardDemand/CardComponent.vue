@@ -3,15 +3,16 @@ import type { IService } from "~/types/service";
 import ModalComponent from "../Modal/ModalComponent.vue";
 import { status } from "~/consts";
 import dayjs from "dayjs";
-
+const { finishService } = userServices();
 defineProps<{
   service: IService;
 }>();
 
+
 </script>
 
 <template>
-  <UCard class="w-full">
+  <UCard v-if="!service.isFinished" class="w-full">
     <template #header>
       <h2 class="text-xl font-bold">Cliente {{ service.clientName }}</h2>
     </template>
@@ -32,7 +33,7 @@ defineProps<{
       <section class="flex justify-between">
         <ModalComponent money="00,00" description="Computador com x defeitos" date="dd/mm/yyyy" status="Aprove"
           code="000-00" title="Cliente XPTO" />
-        <UButton class="cursor-pointer">Finalizar serviço</UButton>
+        <UButton class="cursor-pointer" @click="finishService(service.id)">Finalizar serviço</UButton>
       </section>
     </template>
   </UCard>
