@@ -1,88 +1,73 @@
 <script lang="ts" setup>
-const statusValue = ref(["Done", "Pending", "Cancel", "Aprove"]);
-defineProps<{
+import dayjs from "dayjs";
+import { z } from "zod";
+import type { FormSubmitEvent } from "@nuxt/ui";
+const { updateService, wasUpdated } = useUpdateService();
+const props = defineProps<{
+  id: string,
   title: string;
   code: string;
   description: string;
   money: string;
   date: string;
-  status: "Done" | "Pending" | "Cancel" | "Aprove";
 }>();
+
+
+const schema = z.object({
+  description: z.string("Digite a descrição do problema"),
+  deliveryDate: z.string("Escolha uma data"),
+})
+type Schema = z.output<typeof schema>;
+
+const state = reactive<Partial<Schema>>({
+  deliveryDate: props.date,
+  description: props.description,
+});
+
+
+const handleUpdateService = async (event: FormSubmitEvent<Schema>) => {
+  if (event.isTrusted) {
+    console.log("data", event.data)
+    const dto: Schema = {
+      deliveryDate: dayjs(event.data.deliveryDate).toDate().toString(),
+      description: event.data.description
+    }
+    await updateService(props.id, dto);
+    if (wasUpdated.value) {
+      close();
+    }
+  }
+}
+
+
 </script>
 
 <template>
-  <UModal
-    :dismissible="false"
-    :title="title"
-    :ui="{
-      content: 'bg-card',
-      overlay: 'bg-black/60 transition-opacity',
-      close: 'hover:bg-black',
-    }"
-  >
+  <UModal :dismissible="false" :title="title" :ui="{
+    content: 'bg-card',
+    overlay: 'bg-black/60 transition-opacity',
+    close: 'hover:bg-black',
+  }">
     <UButton label="Atualizar" color="neutral" class="cursor-pointer" />
-    <template #body="{ close }">
+    <template #body>
       <section>
-        <UForm class="flex flex-col space-y-4">
-          <UFormField
-            size="xl"
-            label="Descrição do problema"
-            name="description"
-          >
-            <UInput
-              color="neutral"
-              aria-label="Atualize a descrição do serviço"
-              placeholder="Digite o novo nome do serviço"
-              highlight
-              class="w-full"
-              :default-value="description"
-              autofocus
-            />
+        <UForm :schema="schema" :state="state" class="flex flex-col space-y-4" @submit="handleUpdateService">
+          <UFormField size="xl" label="Descrição do problema" name="description">
+            <UTextarea v-model="state.description" autoresize highlight class="w-full" color="neutral"
+              :ui="{ base: 'placeholder:text-white' }" />
           </UFormField>
           <UFormField size="xl" name="money" label="Orçamento">
-            <UInput
-              aria-label="Atualize o valor do seu orçamento"
-              placeholder="Digite um novo valor de orçamento"
-              color="neutral"
-              highlight
-              :default-value="money"
-              class="w-full"
-            />
+            <span>{{ money }}</span>
           </UFormField>
           <UFormField size="xl" name="code" label="Código do cliente">
-            <span class="">{{ code }}</span>
+            <span>{{ code }}</span>
           </UFormField>
           <UFormField size="xl" label="Data de entrega" name="date">
-            <UInput
-              color="neutral"
-              aria-label="Atualize a sua data de entrega"
-              placeholder="Digite uma nova data de entrega"
-              highlight
-              class="w-full"
-              type="date"
-              :default-value="date"
-            />
+            <UInput v-model="state.deliveryDate" highlight type="date" color="neutral" class="w-full"
+              :min="dayjs().format('YYYY-MM-DD')" :ui="{ base: 'placeholder:text-white' }" />
           </UFormField>
-          <UFormField size="xl" label="Status" name="status">
-            <USelect
-              color="neutral"
-              aria-label="Selecione um novo status para o serviço"
-              highlight
-              class="w-full"
-              type="item"
-              :default-value="status"
-              :items="statusValue"
-              :ui="{
-                group: 'bg-card',
-              }"
-            />
-          </UFormField>
-          <UButton
-            class="items-center justify-center flex cursor-pointer font-bold"
-            color="neutral"
-            @click="close"
-            >Atualizar</UButton
-          >
+          <UButton class="items-center justify-center flex cursor-pointer font-bold" color="neutral" type="submit">
+            Atualizar</UButton>
         </UForm>
       </section>
     </template>

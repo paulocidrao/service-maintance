@@ -2,7 +2,6 @@
 import type { IService } from "~/types/service";
 import ModalComponent from "../Modal/ModalComponent.vue";
 import { status } from "~/consts";
-import dayjs from "dayjs";
 const { finishService } = userServices();
 defineProps<{
   service: IService;
@@ -19,10 +18,8 @@ defineProps<{
     <template #default>
       <section class="flex flex-col gap-1">
         <span>Código do cliente: {{ service.userCode }}</span>
-        <span>Data de entrega: {{ dayjs(service.deliveryDate).format("DD/MM/YYYY") }}</span>
-        <span>Valor do serviço: {{ service.budget.price.toLocaleString("PT-BR", {
-          style: 'currency', currency: "BRL"
-        }) }}</span>
+        <span>Data de entrega: {{ formatDate(service.deliveryDate) }}</span>
+        <span>Valor do serviço: {{ formatMoney(service.budget.price) }}</span>
         <span class="flex items-center gap-1">Status:
           {{ status[service.budget.status] }}
         </span>
@@ -31,8 +28,8 @@ defineProps<{
     </template>
     <template #footer>
       <section class="flex justify-between">
-        <ModalComponent money="00,00" description="Computador com x defeitos" date="dd/mm/yyyy" status="Aprove"
-          code="000-00" title="Cliente XPTO" />
+        <ModalComponent :id="service.id" :money="formatMoney(service.budget.price)" :description="service.description"
+          :date="formatDateForInput(service.deliveryDate)" :code="service.userCode" :title="service.clientName" />
         <UButton class="cursor-pointer" @click="finishService(service.id)">Finalizar serviço</UButton>
       </section>
     </template>

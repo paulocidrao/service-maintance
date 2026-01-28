@@ -13,3 +13,8 @@ export interface IService {
     price: number;
   };
 }
+
+export interface IUpdateService {
+  description: string;
+  deliveryDate: string;
+}
