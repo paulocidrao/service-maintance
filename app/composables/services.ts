@@ -1,12 +1,13 @@
 import { useCustomToast } from "~/components/Toast/Toast";
 import type { IService } from "~/types/service";
 
-const config = useRuntimeConfig();
-const cookie = useCookie<{ token: string }>("token");
-const service = ref<IService[] | null>(null);
 const errorMessage = ref("");
-const { successToast } = useCustomToast();
+
 export const userServices = () => {
+  const config = useRuntimeConfig();
+  const cookie = useCookie<{ token: string }>("token");
+  const service = ref<IService[] | null>(null);
+  const { successToast } = useCustomToast();
   const getAllServices = async () => {
     await $fetch(`${config.public.apiBase}/job/all`, {
       method: "GET",
