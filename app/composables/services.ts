@@ -17,7 +17,6 @@ export const userServices = () => {
       },
       onResponse({ response }) {
         if (response.ok) {
-          console.log("response", response);
           service.value = response._data;
         } else {
           errorMessage.value = response._data.message;

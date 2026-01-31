@@ -7,7 +7,6 @@ defineProps<{
   service: IService;
 }>();
 
-
 </script>
 
 <template>

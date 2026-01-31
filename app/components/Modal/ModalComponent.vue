@@ -3,6 +3,8 @@ import dayjs from "dayjs";
 import { z } from "zod";
 import type { FormSubmitEvent } from "@nuxt/ui";
 const { updateService, wasUpdated } = useUpdateService();
+
+
 const props = defineProps<{
   id: string,
   title: string;
@@ -12,42 +14,41 @@ const props = defineProps<{
   date: string;
 }>();
 
+const isOpen = ref(false);
 
 const schema = z.object({
-  description: z.string("Digite a descrição do problema"),
-  deliveryDate: z.string("Escolha uma data"),
+  description: z.string().min(1, "Digite a descrição do problema"),
+  deliveryDate: z.string().min(1, "Escolha uma data"),
 })
 type Schema = z.output<typeof schema>;
 
-const state = reactive<Partial<Schema>>({
-  deliveryDate: props.date,
+const state = reactive<Schema>({
+  deliveryDate: dayjs(props.date).format('YYYY-MM-DD'),
   description: props.description,
 });
 
-
 const handleUpdateService = async (event: FormSubmitEvent<Schema>) => {
-  if (event.isTrusted) {
-    const dto: Schema = {
-      deliveryDate: dayjs(event.data.deliveryDate).toDate().toString(),
-      description: event.data.description
-    }
-    await updateService(props.id, dto);
+  try {
+    await updateService(props.id, {
+      deliveryDate: event.data.deliveryDate, description: event.data.description,
+    });
     if (wasUpdated.value) {
-      close();
+      isOpen.value = false;
     }
+  } finally {
+    isOpen.value = false;
   }
-}
-
-
+};
 </script>
 
 <template>
-  <UModal :dismissible="false" :title="title" :ui="{
+  <UModal v-model:open="isOpen" :dismissible="true" :title="title" :ui="{
     content: 'bg-card',
     overlay: 'bg-black/60 transition-opacity',
     close: 'hover:bg-black',
   }">
-    <UButton label="Atualizar" color="neutral" class="cursor-pointer" />
+    <UButton label="Atualizar" color="neutral" class="cursor-pointer" @click="isOpen = true" />
+
     <template #body>
       <section>
         <UForm :schema="schema" :state="state" class="flex flex-col space-y-4" @submit="handleUpdateService">
@@ -61,12 +62,13 @@ const handleUpdateService = async (event: FormSubmitEvent<Schema>) => {
           <UFormField size="xl" name="code" label="Código do cliente">
             <span>{{ code }}</span>
           </UFormField>
-          <UFormField size="xl" label="Data de entrega" name="date">
+          <UFormField size="xl" label="Data de entrega" name="deliveryDate">
             <UInput v-model="state.deliveryDate" highlight type="date" color="neutral" class="w-full"
               :min="dayjs().format('YYYY-MM-DD')" :ui="{ base: 'placeholder:text-white' }" />
           </UFormField>
           <UButton class="items-center justify-center flex cursor-pointer font-bold" color="neutral" type="submit">
-            Atualizar</UButton>
+            Atualizar
+          </UButton>
         </UForm>
       </section>
     </template>
