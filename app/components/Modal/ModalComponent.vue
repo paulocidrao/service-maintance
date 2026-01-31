@@ -27,7 +27,6 @@ const state = reactive<Partial<Schema>>({
 
 const handleUpdateService = async (event: FormSubmitEvent<Schema>) => {
   if (event.isTrusted) {
-    console.log("data", event.data)
     const dto: Schema = {
       deliveryDate: dayjs(event.data.deliveryDate).toDate().toString(),
       description: event.data.description
