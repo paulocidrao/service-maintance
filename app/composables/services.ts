@@ -3,6 +3,7 @@ import type { IService } from "~/types/service";
 
 export const userServices = () => {
   const config = useRuntimeConfig();
+  const router = useRouter();
   const cookie = useCookie<{ token: string }>("token");
   const service = useState<IService[] | null>("services", () => null);
   const errorMessage = useState<string>("servicesError", () => "");
@@ -18,6 +19,9 @@ export const userServices = () => {
       onResponse({ response }) {
         if (response.ok) {
           service.value = response._data;
+        }
+        if (response.status === 401) {
+          router.push("/login");
         } else {
           errorMessage.value = response._data.message;
         }
