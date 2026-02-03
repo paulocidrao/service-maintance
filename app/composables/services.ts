@@ -22,7 +22,8 @@ export const userServices = () => {
         }
         if (response.status === 401) {
           router.push("/login");
-        } else {
+        }
+        if (!response.ok) {
           errorMessage.value = response._data.message;
         }
       },
