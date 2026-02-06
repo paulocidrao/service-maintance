@@ -6,3 +6,8 @@ export interface IProfile {
   createdAt: Date;
   updateAt: Date;
 }
+
+export interface IUpdateProfile {
+  email: string;
+  phone: string;
+}
