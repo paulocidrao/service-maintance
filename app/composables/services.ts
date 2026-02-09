@@ -6,6 +6,7 @@ export const userServices = () => {
   const router = useRouter();
   const cookie = useCookie<{ token: string }>("token");
   const service = useState<IService[] | null>("services", () => null);
+  const oneService = useState<IService | null>("service", () => null);
   const errorMessage = useState<string>("servicesError", () => "");
   const { successToast } = useCustomToast();
 
@@ -18,7 +19,7 @@ export const userServices = () => {
       },
       onResponse({ response }) {
         if (response.ok) {
-          service.value = response._data;
+          service.value = response._data[0];
         }
         if (response.status === 401) {
           router.push("/login");
@@ -51,9 +52,29 @@ export const userServices = () => {
       },
     });
   };
+  const getServiceById = async (id: string) => {
+    await $fetch(`${config.public.apiBase}/job/get/${id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${cookie.value.token}`,
+      },
+      onResponse({ response }) {
+        if (response.ok) {
+          oneService.value = response._data;
+        }
+        if (response.status === 401) {
+          router.push("/login");
+        } else {
+          errorMessage.value = response._data.message;
+        }
+      },
+    });
+  };
   return {
     service,
     errorMessage,
+    oneService,
+    getServiceById,
     getAllServices,
     finishService,
   };
