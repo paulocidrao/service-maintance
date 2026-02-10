@@ -23,7 +23,6 @@ const state = reactive<Schema>({
 
 const handleUpdateUser = async (event: FormSubmitEvent<Schema>) => {
   if (event.isTrusted) {
-    console.log("Data", event.data)
     await updateProfile(profile.value!.id, event.data)
   }
 }

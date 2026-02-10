@@ -5,6 +5,7 @@ import type { FormSubmitEvent } from "@nuxt/ui";
 import { useCustomToast } from "~/components/Toast/Toast";
 const config = useRuntimeConfig();
 const { successToast, errorToast } = useCustomToast();
+const router = useRouter();
 const cookie = useCookie<{ token: string }>("token");
 const schema = z.object({
   userEmail: z.email("Digite um email válido"),
@@ -49,7 +50,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             title: "Serviço criado com sucesso!",
             description: "Veja os detalhes do seu serviço",
             action: () => {
-              console.log("e");
+              router.push(`/services/${response._data.id}`)
             },
             label: "Veja aqui os detalhes",
           });
