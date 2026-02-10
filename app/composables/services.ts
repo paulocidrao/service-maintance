@@ -19,7 +19,7 @@ export const userServices = () => {
       },
       onResponse({ response }) {
         if (response.ok) {
-          service.value = response._data[0];
+          service.value = response._data;
         }
         if (response.status === 401) {
           router.push("/login");
