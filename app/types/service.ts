@@ -14,6 +14,14 @@ export interface IService {
   };
 }
 
+export interface IServiceResponse {
+  data: IService[];
+  page: number;
+  perPage: number;
+  total: number;
+  totalPages: number;
+}
+
 export interface IUpdateService {
   description: string;
   deliveryDate: string;

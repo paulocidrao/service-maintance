@@ -1,19 +1,22 @@
 import { useCustomToast } from "~/components/Toast/Toast";
-import type { IService } from "~/types/service";
+import type { IService, IServiceResponse } from "~/types/service";
 
 export const userServices = () => {
   const config = useRuntimeConfig();
   const router = useRouter();
   const cookie = useCookie<{ token: string }>("token");
-  const service = useState<IService[] | null>("services", () => null);
+  const service = useState<IServiceResponse | null>("services", () => null);
   const oneService = useState<IService | null>("service", () => null);
   const errorMessage = useState<string>("servicesError", () => "");
   const { successToast } = useCustomToast();
 
-  const getAllServices = async () => {
+  const getAllServices = async (page: number = 1) => {
     await $fetch(`${config.public.apiBase}/job/all`, {
       method: "GET",
-
+      params: {
+        page: page,
+        perPage: 10,
+      },
       headers: {
         Authorization: `Bearer ${cookie.value.token}`,
       },

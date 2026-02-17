@@ -33,7 +33,6 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
       onResponse({ response }) {
         if (response.status === 201) {
-          console.log(response._data)
           cookie.value = response._data;
           router.push("/");
         }
