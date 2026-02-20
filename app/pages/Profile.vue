@@ -36,7 +36,7 @@ onMounted(async () => {
   <UContainer>
     <main class="flex items-center justify-center flex-col h-full w-full p-4 rounded">
       <section class="gap-4 flex flex-col items-center">
-        <UAvatar class="size-16" src="https://github.com/benjamincanac.png">
+        <UAvatar class="size-16" size="2xl" :alt="profile?.name">
         </UAvatar>
         <h1 class="text-2xl">{{ profile?.name }}</h1>
       </section>

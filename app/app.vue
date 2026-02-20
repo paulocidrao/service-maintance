@@ -4,7 +4,7 @@ import { jwtDecode } from 'jwt-decode'
 const routes = useRoute();
 onMounted(() => {
   const token = useCookie<{ token: string }>("token")
-  if (!token.value.token) {
+  if (!token.value || !token.value.token) {
     navigateTo("/login")
   }
   if (token.value) {
